@@ -6,10 +6,12 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly", 
+"https://www.googleapis.com/auth/drive.file"]
 
 
 def main():
@@ -52,6 +54,12 @@ def main():
     print("Files:")
     for item in items:
       print(f"{item['name']} ({item['id']})")
+      
+    file_metadata = { 'name': 'test.txt', 'mimeType': '*/*'}
+    media = MediaFileUpload('test.txt', mimetype='*/*',resumable=True)
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    print ('File ID: ' + file.get('id'))
+
   except HttpError as error:
     # TODO(developer) - Handle errors from drive API.
     print(f"An error occurred: {error}")
