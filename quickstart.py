@@ -10,6 +10,7 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 from apiclient import errors
 from apiclient.http import MediaFileUpload
+import webbrowser
 # ...
 
 def update_file(service, file_id, new_title, new_description, new_mime_type,
@@ -30,24 +31,29 @@ def update_file(service, file_id, new_title, new_description, new_mime_type,
   try:
     # First retrieve the file from the API.
     file = service.files().get(fileId=file_id).execute()
-
+    
     # File's new metadata.
     file['title'] = new_title
     file['description'] = new_description
     file['mimeType'] = new_mime_type
-
+    
+    
     # File's new content.
     media_body = MediaFileUpload(
         new_filename, mimetype=new_mime_type, resumable=True)
 
     # Send the request to the API.
+    print(file_id)
+    print(file)
+    print(media_body)
+    del file["id"]
     updated_file = service.files().update(
-        fileId=file_id,
-        body=file,
-        newRevision=new_revision,
+        fileId = file_id, 
+        body=file,    
         media_body=media_body).execute()
+    print("complete")
     return updated_file
-  except (errors.HttpError, error):
+  except (errors.HttpError):
     print ('An error occurred: %s'% error)
     return None
 
@@ -62,6 +68,13 @@ def main():
   """Shows basic usage of the Drive v3 API.
   Prints the names and ids of the first 10 files the user has access to.
   """
+    
+  webbrowser.register("termux-open '%s'", None)
+
+
+
+
+
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
   # created automatically when the authorization flow completes for the first
@@ -84,25 +97,9 @@ def main():
   try:
     service = build("drive", "v3", credentials=creds)
 
-    # Call the Drive v3 API
-    results = (
-        service.files()
-        .list(pageSize=10, fields="nextPageToken, files(id, name)")
-        .execute()
-    )
-    items = results.get("files", [])
-
-    if not items:
-      print("No files found.")
-      return
-    print("Files:")
-    for item in items:
-      print(f"{item['name']} ({item['id']})")
-      
-    file_metadata = { 'name': 'test.txt', 'mimeType': '*/*'}
-    media = MediaFileUpload('test.txt', mimetype='*/*',resumable=True)
-    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    print ('File ID: ' + file.get('id'))
+   
+    file_id = "17akztcEzV24Vp5GDZWzKjc-z9zyfXMi6"
+    update_file(service, file_id, "hello.txt", "description", 'application/json', "uploadme.txt", False)
 
   except HttpError as error:
     # TODO(developer) - Handle errors from drive API.
