@@ -2,7 +2,7 @@ import json
 
 import socket
 
-
+import cloud_log
 import urllib.request
 
 external_ipv4 = urllib.request.urlopen('https://4.ident.me').read().decode('utf8')

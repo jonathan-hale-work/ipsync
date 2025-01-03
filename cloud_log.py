@@ -64,14 +64,19 @@ SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly",
 "https://www.googleapis.com/auth/drive.file"]
 
 
-def main():
+def cloud_log(json_log):
   """Shows basic usage of the Drive v3 API.
   Prints the names and ids of the first 10 files the user has access to.
   """
     
   webbrowser.register("termux-open '%s'", None)
 
+  log_filename = "cloud_log.json"
 
+  with open(log_filename, "w") as log_file:
+      log_file.write(json_log)
+      print("wrote log to " + log_filename)
+      print(json_log)
 
 
 
@@ -99,7 +104,7 @@ def main():
 
    
     file_id = "17akztcEzV24Vp5GDZWzKjc-z9zyfXMi6"
-    update_file(service, file_id, "hello.txt", "description", 'application/json', "uploadme.txt", False)
+    update_file(service, file_id, "cloud_log.json", "description", 'application/json', log_filename, False)
 
   except HttpError as error:
     # TODO(developer) - Handle errors from drive API.
@@ -107,4 +112,4 @@ def main():
 
 
 if __name__ == "__main__":
-  main()
+    main()
