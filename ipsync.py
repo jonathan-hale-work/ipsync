@@ -28,3 +28,5 @@ ip_dict = {
 ip_json = json.dumps(ip_dict, indent=4)
 with open("ipsync.json", "w") as outfile:
     outfile.write(ip_json)
+
+cloud_log.cloud_log(ip_json)
